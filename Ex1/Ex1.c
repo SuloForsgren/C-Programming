@@ -12,7 +12,7 @@ int main(void)
 	scanf("%f", &busTicket);
 	
 	printf("Enter taxi ticket price: ");                     
-        scanf("%f", &taxiTicket);                                                                                                      
+    scanf("%f", &taxiTicket);                                                                                                      
 
 	printf("How much money do you have?: ");
 	scanf("%f", &money);

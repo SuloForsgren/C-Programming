@@ -27,6 +27,19 @@ int main(void)
         taxArray[index] = salary;
         index++;
     }
+    index = 0;
+
+    printf("%-10s%-10s%-10s\n", "Month", "Income", "Tax");
+    while(index < 12)
+    {
+	
+	printf("%5d\n", index);
+	index++;
+    }
+
+
+
+
 
     return 0;
 }

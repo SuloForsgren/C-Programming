@@ -1,53 +1,66 @@
 #include <stdio.h>
-#include <stdlib.h>
 
-int main(void) {
-    int students;
-    int student;
-    int grade;
-    int index = 0;  // Initialize index to 0
-    char buf[20];  // Adjust the size according to your needs
+int main() {
+    int num_students, student_number, grade;
+    int index = 0;
 
     printf("How many students: ");
-    scanf("%d", &students);
+    scanf("%d", &num_students);
 
-    if (students <= 0) {
-        printf("Invalid number of students. Exiting program.\n");
-        return 1;  // Exit with an error code
+    int grades[num_students];
+    for (int i = 0; i < num_students; i++) 
+    {
+        grades[i] = -1;
     }
 
-    int *studentArray = (int *)malloc(students * sizeof(int));
+    while (1) 
+    {
+        printf("Enter student number (1 - %d) or 0 to stop: ", num_students);
+        scanf("%d", &student_number);
 
-    while (1) {
-        printf("Enter student number (1 - %d) or 0 to stop: ", students);
-        scanf("%d", &student);
-
-        if (student == 0) {
+        if (student_number == 0) 
+        {
             break;
-        }
+        } 
+        else if (student_number >= 1 && student_number <= num_students) 
+        {
+            while (1) 
+            {
+                printf("Enter grade (0 - 5) for student %d or -1 to cancel: ", student_number);
+                scanf("%d", &grade);
 
-        if (student > students || student < 1) {
-            printf("Invalid student number!\n");
-        } else {
-            printf("Enter grade (0 - 5) for student %d or -1 to cancel: ", student);
-            scanf("%d", &grade);
-
-            if (grade > 5 || grade < -1) {
-                printf("Invalid grade!\n");
-            } else {
-                studentArray[index] = (grade == -1) ? -1 : grade;
-                index++;
+                if (grade >= -1 && grade <= 5) 
+                {
+                    grades[student_number - 1] = grade;
+                    break;
+                } 
+                else 
+                {
+                    printf("Invalid grade!\n");
+                }
             }
+            
+        } 
+        else 
+        {
+            printf("Invalid student number!\n");
         }
     }
 
-    printf("\n%-10s%10s\n", "Student", "Grade");
+    printf("%s%8s\n", "Student", "Grade");
 
-    for (int i = 0; i < index; i++) {
-        printf("%-10d%10s\n", i + 1, (studentArray[i] == -1) ? "N/A" : (sprintf(buf, "%d", studentArray[i]), buf));
-    }
-
-    free(studentArray); // Free the allocated memory
+    while (index < num_students)
+    {
+        if (grades[index] == -1) 
+        {
+            printf("%d%12s\n", index + 1, "N/A");
+        }            
+        else 
+        {
+            printf("%d%10d\n", index + 1, grades[index]);
+        }
+        index++;
+    }        
 
     return 0;
 }

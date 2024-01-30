@@ -3,7 +3,6 @@
 int main(void) 
 {
     float taxArray[12];
-    //float array2[12];
     float salary;
     float taxRate;
     float higherTax;

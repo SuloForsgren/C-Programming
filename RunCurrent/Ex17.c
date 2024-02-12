@@ -3,28 +3,27 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define passwordLength 32
-#define ARRLength 30
+#define PASSWORD_LENGTH 32
+#define ARRAY_LENGTH 64 // Adjusted to accommodate the length of the password and random characters
 
-int array[ARRLength]
+char array[ARRAY_LENGTH];
 
 bool generatePassword(int passwordLen, const char *word) {
-    for (int i = 2; i < passwordLen + 2; i++) {
-        if (i % 2 == 0) {
-            array[i] = word[i]
-        }
-        else {
-            array[i] = 
-        }
+    for (int i = 1; i < passwordLen - 1; i += 2) {
+        array[i] = word[(i - 1) / 2]; // Inserting characters from the word
+        array[i + 1] = rand() % (126 - 33 + 1) + 33; // Inserting random characters
     }
+    array[0] = rand() % (126 - 33 + 1) + 33; // Starting random character
+    array[passwordLen - 1] = rand() % (126 - 33 + 1) + 33; // Ending random character
+    array[passwordLen] = '\0'; // Null terminator
 
-
+    printf("%s\n", array);
     return false;
 }
 
 
 int main(void) {
-    char password[passwordLength];
+    char password[PASSWORD_LENGTH];
     int ARRlength;
 
     while(1) {
@@ -35,8 +34,7 @@ int main(void) {
             break;
         }
         else {
-            ARRlength = (strlen(password) * 2 + 1);
-            generatePassword(ARRlength, password);
+            generatePassword(strlen(password) * 2 + 2, password);
         }
     }
 

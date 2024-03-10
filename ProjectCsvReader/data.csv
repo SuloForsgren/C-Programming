@@ -1,4 +1,5 @@
 Temperature,Room
+35.4,Bedroom
 22.5,Kitchen
 18.7,Living Room
 24.2,Bedroom
@@ -10,4 +11,4 @@ Temperature,Room
 13.7,Bedroom
 21.8,Kitchen
 11.5,Living Room
-24.9,Bedroom
+-24.9,Bedroom

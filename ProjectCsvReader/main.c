@@ -1,82 +1,70 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#define roomLength 30
-#define bufferLength 100
-#define maxOccurances 20
+#define MAX_ROOM_LENGTH 20
+#define MAX_TEMP 30
+#define MIN_TEMP 0
+#define BUFFER_SIZE 256
 
-float split(char buffer[]) {
-    char *token = strtok(buffer, ",");
-    float num = atof(token);
-    return num;
+void printBar(float temperature) {
+    int num_dashes = (int)(temperature * 2);
+    if (temperature < MIN_TEMP || temperature > MAX_TEMP) {
+        printf("X\n");
+    } else {
+        for (int i = 0; i < num_dashes; i++) {
+            printf("-");
+        }
+        printf("\n");
+    }
 }
 
-bool errorCheck(char input[]) {
-    FILE *filePtr;
-    char buffer[bufferLength];
-    bool roomFound = false;
-
-    filePtr = fopen("data.csv", "r");
-    if (filePtr == NULL) {
-        printf("Unable to open data.csv\n");
-        return false; // Return false if unable to open the file
+int validateRoomName(const char *room) {
+    if (strlen(room) > MAX_ROOM_LENGTH) {
+        printf("Error: Room name exceeds maximum length.\n");
+        return 0;
     }
+    return 1;
+}
 
-    // Skip the first line if necessary
-    fgets(buffer, bufferLength, filePtr);
-
-    // Read room names from the CSV file and compare with the input
-    while (fgets(buffer, bufferLength, filePtr) != NULL) {
-        char token[roomLength];
-        sscanf(buffer, "%[^,]", token); // Read the room name from the line
-
-        if (strcmp(token, input) == 0) {
-            roomFound = true;
-            break;
+void printRoomTemperature(FILE *file, const char *room) {
+    int room_found = 0;
+    char buffer[BUFFER_SIZE];
+    while (fgets(buffer, BUFFER_SIZE, file) != NULL) {
+        char temp_str[20], room_name[MAX_ROOM_LENGTH];
+        float temperature;
+        sscanf(buffer, "%[^,],%s", temp_str, room_name);
+        temperature = atof(temp_str);
+        if (strcmp(room_name, room) == 0) {
+            room_found = 1;
+            printf("%.1f ", temperature);
+            printBar(temperature);
         }
     }
 
-    fclose(filePtr);
-
-    return roomFound;
+    if (!room_found) {
+        printf("Room not found.\n");
+    }
 }
 
-int main(void) {
-    FILE *filePtr;
-    char buffer[bufferLength];
-    int first_row = 1;
-    int arrayForTemps[maxOccurances];
-    
-
-    filePtr = fopen("data.csv", "r");
-
-    if (filePtr != NULL) {
-        while (fgets(buffer, bufferLength, filePtr) != NULL) {
-            char input[roomLength];
-            if (first_row) {
-                first_row = 0;
-                continue;
-            }
-
-            printf("Please enter the name of the room which you would like to get temperature data from (Bedroom, Kitchen etc..) with a capital letter\n");
-            printf(">>");
-            scanf("%s", input);
-            if (errorCheck) {
-                printf("Error! No room with name %s\n", input);
-            }
-            else {
-                float temp = split(buffer);
-                printf("%.1f\n", temp);
-            }
-        }
-    } 
-    else {
-        printf("Unable to open data.csv\n");
+int main() {
+    FILE *file = fopen("data.csv", "r");
+    if (file == NULL) {
+        printf("Failed to open the file.\n");
         return 1;
     }
 
-    fclose(filePtr);
+    char room[MAX_ROOM_LENGTH];
+    printf("Enter the room name: ");
+    scanf("%s", room);
+
+    if (!validateRoomName(room)) {
+        fclose(file);
+        return 1;
+    }
+
+    printRoomTemperature(file, room);
+
+    fclose(file);
     return 0;
 }

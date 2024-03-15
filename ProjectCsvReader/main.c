@@ -26,28 +26,39 @@ void printRoomTemperature(FILE *file, const char *room) {
     int room_found = 0;
     char buffer[BUFFER_SIZE];
     
-    //While loop comparing every file row's room name to user input and then proceeds to print dashes if true. 
+    //Read lines from the csv file and "tokenize" them
     while (fgets(buffer, BUFFER_SIZE, file) != NULL) {
-        char temp_str[20], room_name[MAX_ROOM_LENGTH];
-        float temperature;
-        sscanf(buffer, "%[^,],%s", temp_str, room_name); //%[^,] --> keep reading characters from buffer until encountering comma and then split result's lefthand side to 'temp_str' and righthand side to 'room_name'
-        temperature = atof(temp_str); //str to float conversion
+        char *token = strtok(buffer, ","); //Get the lefthand side of the string (temperature)
+        
+        if (token != NULL) {
+            float temperature = atof(token); //String to float
+            token = strtok(NULL, ","); //Get the righthand side of the string (room name)
 
-        if (strcmp(room_name, room) == 0) {
-            room_found = 1;
-            printf("%.1f ", temperature);
-            printBar(temperature); //print the dashes using function printBar
+            if (token != NULL) {
+                token[strcspn(token, "\n")] = '\0'; // Remove newline
+                
+                //Compare room names and print the room name once. Also print dashes(bar) from the temperature data
+                if (strcmp(token, room) == 0) {
+                    if (room_found == 0) {
+                        printf("%s\n", room);
+                    }
+                    room_found = 1;
+                    printf("%.1f ", temperature);
+                    printBar(temperature);
+                }
+            }
         }
     }
-
+    //If there weren't any matches for the room name then throw an error message.
     if (!room_found) {
-        printf("Room not found.\n");
+        printf("%s is not a room!\n", room);
     }
 }
 
 //Main function handling opening of the csv file and user input.
 int main() {
     FILE *file = fopen("data.csv", "r");
+
     if (file == NULL) {
         printf("Failed to open the file.\n");
         return 1;
@@ -55,10 +66,11 @@ int main() {
 
     char room[MAX_ROOM_LENGTH];
     printf("Enter the room name: ");
-    scanf("%s", room);
-
+    fgets(room, MAX_ROOM_LENGTH, stdin);
+    room[strcspn(room, "\n")] = '\0';
     printRoomTemperature(file, room);
 
+    //Close file and end the program
     fclose(file);
     return 0;
 }
